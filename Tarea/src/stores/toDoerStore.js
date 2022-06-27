@@ -2,29 +2,33 @@ import { defineStore } from 'pinia'
 
 export const useToDoerStore = defineStore('toDoerStore', {
     state: () => ({
+        newTodo: '',
         todos: [],
-        filter: 'all',
-        nextId: 0,
+        todoID: 1,
+        showCompleted: false
     }),
     getters: {
-        finishedTodos(state) {
-            return state.todos.filter((todo) => todo.isFinished)
+        completedTodos(state) {
+            return state.todos.filter((todo) => todo.completed)
         },
-        unfinishedTodos(state) {
-            return state.todos.filter((todo) => !todo.isFinished)
-        },
-        filteredTodos(state) {
-            if (this.filter === 'finished') {
-                return this.finishedTodos
-            } else if (this.filter === 'unfinished') {
-                return this.unfinishedTodos
-            }
-            return this.todos
+        uncompletedTodos(state) {
+            return state.todos.filter((todo) => !todo.completed)
         },
     },
     actions: {
-        addTodo(text) {
-            this.todos.push({ text, id: this.nextId++, isFinished: false })
+        addTodo() {
+            this.todos.push(
+                {
+                    id: this.todoID++,
+                    text: this.newTodo,
+                    hidden: true,
+                    completed: false,
+                }
+            )
+            this.newTodo = ''
         },
+        removeTodo(todo) {
+            if (confirm("Esta seguro de eliminar la tarea '" + todo.text + "'")) this.todos = this.todos.filter(todoItem => todoItem.id != todo.id)
+        }
     },
 })
